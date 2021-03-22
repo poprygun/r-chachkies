@@ -6,7 +6,6 @@ import org.jeasy.random.EasyRandom;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.rsocket.RSocketRequester;
 import org.springframework.stereotype.Controller;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -27,39 +26,22 @@ public class ServerApplication {
 @Log4j2
 class GreetingController {
 
-	private EasyRandom chachkieFactory = new EasyRandom();
+	private final EasyRandom chachkieFactory = new EasyRandom();
 
 	@MessageMapping("chachkies")
-	Flux<Chachkie> chachkies(
-			RSocketRequester clientRSocketConnection,
-			Mono<Instant> chRequest) {
+	Flux<Chachkie> chachkies(Mono<Instant> chRequest) {
 		return chRequest
-				.flatMapMany(when -> this.greet(clientRSocketConnection, when));
+				.doOnNext(r -> log.info(" 🀄 " + r.toString()))
+				.flatMapMany(when -> this.someChachkies());
 	}
 
-	private Flux<Chachkie> greet(
-			RSocketRequester clientRSocketConnection, Instant requests) {
+	private Flux<Chachkie> someChachkies() {
 
-//		var clientHealth = clientRSocketConnection
-//				.route("health")
-//				.retrieveFlux(ClientHealthState.class)
-//				.filter(chs -> !chs.isHealthy())
-//				.doOnNext(chs -> log.info("not healthy! "));
-
-		var chackies = Flux
+		return Flux
 				.fromStream(chachkieFactory.objects(Chachkie.class, 13))
-				.take(2)
 				.delayElements(Duration.ofSeconds(1));
-
-//		return chackies.takeUntilOther(clientHealth);
-		return chackies;
 	}
 }
-
-//@Value
-//class ChachkieRequest {
-//	Instant when;
-//}
 
 @Value
 class Chachkie {

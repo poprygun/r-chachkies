@@ -1,10 +1,5 @@
 package io.microsamples.r.client;
 
-import io.rsocket.RSocket;
-import io.rsocket.SocketAcceptor;
-import io.rsocket.frame.decoder.PayloadDecoder;
-import io.rsocket.metadata.WellKnownMimeType;
-import io.rsocket.transport.netty.client.TcpClientTransport;
 import lombok.SneakyThrows;
 import lombok.Value;
 import lombok.extern.log4j.Log4j2;
@@ -14,12 +9,10 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.messaging.rsocket.RSocketRequester;
-import org.springframework.messaging.rsocket.RSocketStrategies;
-import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler;
-import org.springframework.util.MimeType;
-import org.springframework.util.MimeTypeUtils;
 import reactor.core.publisher.Mono;
+import reactor.util.retry.Retry;
 
+import java.time.Duration;
 import java.time.Instant;
 
 @SpringBootApplication
@@ -36,9 +29,8 @@ public class ClientApplication {
 	RSocketRequester rSocketRequester(
 			RSocketRequester.Builder builder) {
 		return builder
-//				.dataMimeType(MimeTypeUtils.APPLICATION_JSON)
-				.connectTcp("localhost", 9091)
-				.block();
+				.rsocketConnector(connector -> connector.reconnect(Retry.backoff(10, Duration.ofMillis(500))))
+				.tcp("localhost", 9091);
 	}
 
 	@Bean
