@@ -1,24 +1,29 @@
 package io.microsamples.r.server;
 
+import io.rsocket.core.Resume;
 import lombok.Value;
 import lombok.extern.log4j.Log4j2;
 import org.jeasy.random.EasyRandom;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.rsocket.server.RSocketServerCustomizer;
+import org.springframework.context.annotation.Bean;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.util.retry.Retry;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.stream.Stream;
 
 @SpringBootApplication
 public class ServerApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(ServerApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(ServerApplication.class, args);
+    }
 
 }
 
@@ -26,25 +31,36 @@ public class ServerApplication {
 @Log4j2
 class GreetingController {
 
-	private final EasyRandom chachkieFactory = new EasyRandom();
+    private final EasyRandom chachkieFactory = new EasyRandom();
 
-	@MessageMapping("chachkies")
-	Flux<Chachkie> chachkies(Mono<Instant> chRequest) {
-		return chRequest
-				.doOnNext(r -> log.info(" 🀄 " + r.toString()))
-				.flatMapMany(when -> this.someChachkies());
-	}
+    @MessageMapping("chachkies")
+    Flux<Chachkie> chachkies(Mono<Instant> chRequest) {
+        return chRequest
+                .doOnNext(r -> log.info(" 🀄 " + r.toString()))
+                .flatMapMany(when -> this.someChachkies());
+    }
 
-	private Flux<Chachkie> someChachkies() {
+    @Bean
+    RSocketServerCustomizer rSocketResume() {
+        Resume resume =
+                new Resume()
+                        .sessionDuration(Duration.ofMinutes(15))
+                        .retry(
+                                Retry.fixedDelay(Long.MAX_VALUE, Duration.ofSeconds(5))
+                                        .doBeforeRetry(s -> log.debug("Disconnected. Trying to resume...")));
+        return rSocketServer -> rSocketServer.resume(resume);
+    }
 
-		return Flux
-				.fromStream(chachkieFactory.objects(Chachkie.class, 13))
-				.delayElements(Duration.ofSeconds(1));
-	}
+    private Flux<Chachkie> someChachkies() {
+
+        return Flux
+                .fromStream(Stream.generate(() -> chachkieFactory.nextObject(Chachkie.class)))
+                .delayElements(Duration.ofSeconds(1));
+    }
 }
 
 @Value
 class Chachkie {
-	Double lat, lon;
-	Instant when;
+    Double lat, lon;
+    Instant when;
 }
