@@ -1,18 +1,14 @@
 package io.microsamples.r.server;
 
-import io.rsocket.core.Resume;
 import lombok.Value;
 import lombok.extern.log4j.Log4j2;
 import org.jeasy.random.EasyRandom;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.rsocket.server.RSocketServerCustomizer;
-import org.springframework.context.annotation.Bean;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.util.retry.Retry;
 
 import java.time.Duration;
 import java.time.Instant;

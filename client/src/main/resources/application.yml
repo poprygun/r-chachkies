@@ -1,0 +1,12 @@
+io.rsocket.routing.client:
+  route-id: 00000000-0000-0000-0000-000000000001
+  service-name: client
+  tags:
+    INSTANCE_NAME: client
+  address:
+    chachkies:
+      service_name: server
+  brokers:
+    - tcp:
+        host: localhost
+        port: 8002

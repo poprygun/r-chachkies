@@ -9,13 +9,12 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>io.microsamples.r</groupId>
-	<artifactId>client</artifactId>
+	<artifactId>broker</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>client</name>
-	<description>Demo project for Spring Boot</description>
+	<name>broker</name>
+	<description>Broker</description>
 	<properties>
 		<java.version>11</java.version>
-		<spring-native.version>0.9.1-SNAPSHOT</spring-native.version>
 		<rsocket-routing.version>0.2.0-SNAPSHOT</rsocket-routing.version>
 	</properties>
 	<dependencies>
@@ -25,29 +24,8 @@
 		</dependency>
 		<dependency>
 			<groupId>io.rsocket.routing</groupId>
-			<artifactId>rsocket-routing-client-spring</artifactId>
+			<artifactId>rsocket-routing-broker-spring</artifactId>
 			<version>${rsocket-routing.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>io.rsocket.routing</groupId>
-			<artifactId>rsocket-routing-frames</artifactId>
-			<version>${rsocket-routing.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-configuration-processor</artifactId>
-			<optional>true</optional>
-		</dependency>
-<!--		<dependency>-->
-<!--			<groupId>org.springframework.experimental</groupId>-->
-<!--			<artifactId>spring-native</artifactId>-->
-<!--			<version>${spring-native.version}</version>-->
-<!--		</dependency>-->
-
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -66,61 +44,36 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-					<excludes>
-						<exclude>
-							<groupId>org.projectlombok</groupId>
-							<artifactId>lombok</artifactId>
-						</exclude>
-					</excludes>
-					<image>
-						<builder>paketobuildpacks/builder:tiny</builder>
-						<env>
-							<BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>
-						</env>
-					</image>
-				</configuration>
 			</plugin>
-<!--			<plugin>-->
-<!--				<groupId>org.springframework.experimental</groupId>-->
-<!--				<artifactId>spring-aot-maven-plugin</artifactId>-->
-<!--				<version>${spring-native.version}</version>-->
-<!--				<executions>-->
-<!--					<execution>-->
-<!--						<id>test-generate</id>-->
-<!--						<goals>-->
-<!--							<goal>test-generate</goal>-->
-<!--						</goals>-->
-<!--					</execution>-->
-<!--					<execution>-->
-<!--						<id>generate</id>-->
-<!--						<goals>-->
-<!--							<goal>generate</goal>-->
-<!--						</goals>-->
-<!--					</execution>-->
-<!--				</executions>-->
-<!--			</plugin>-->
 		</plugins>
 	</build>
 	<pluginRepositories>
 		<pluginRepository>
 			<id>spring-snapshots</id>
 			<name>Spring Snapshots</name>
-			<url>https://repo.spring.io/snapshot</url>
+			<url>https://repo.spring.io/libs-snapshot-local</url>
 			<snapshots>
 				<enabled>true</enabled>
 			</snapshots>
 		</pluginRepository>
+		<pluginRepository>
+			<id>spring-milestones</id>
+			<name>Spring Milestones</name>
+			<url>https://repo.spring.io/milestone</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
+		<pluginRepository>
+			<id>spring-releases</id>
+			<name>Spring Releases</name>
+			<url>https://repo.spring.io/release</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
 	</pluginRepositories>
 	<repositories>
-<!--		<repository>-->
-<!--			<id>spring-snapshots</id>-->
-<!--			<name>Spring Snapshots</name>-->
-<!--			<url>https://repo.spring.io/snapshot</url>-->
-<!--			<snapshots>-->
-<!--				<enabled>true</enabled>-->
-<!--			</snapshots>-->
-<!--		</repository>-->
 		<repository>
 			<id>spring-snapshots</id>
 			<name>Spring Snapshots</name>
