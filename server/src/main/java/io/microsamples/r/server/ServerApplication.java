@@ -40,17 +40,6 @@ class GreetingController {
                 .flatMapMany(when -> this.someChachkies());
     }
 
-    @Bean
-    RSocketServerCustomizer rSocketResume() {
-        Resume resume =
-                new Resume()
-                        .sessionDuration(Duration.ofMinutes(15))
-                        .retry(
-                                Retry.fixedDelay(Long.MAX_VALUE, Duration.ofSeconds(5))
-                                        .doBeforeRetry(s -> log.debug("Disconnected. Trying to resume...")));
-        return rSocketServer -> rSocketServer.resume(resume);
-    }
-
     private Flux<Chachkie> someChachkies() {
 
         return Flux
