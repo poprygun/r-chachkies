@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rchachkies
+spec:
+  selector:
+    matchLabels:
+      app: rchachkies
+  template:
+    metadata:
+      labels:
+        app: rchachkies
+    spec:
+      containers:
+      - name: broker
+        image: broker:0.0.1-SNAPSHOT
+        imagePullPolicy: Never
+        resources:
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+      - name: server
+        image: server:0.0.1-SNAPSHOT
+        imagePullPolicy: Never
+        env:
+          - name: IO_RSOCKET_ROUTING_CLIENT_BROKERS_0_TCP_HOST
+            value: "8001"  
+        resources:
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+      - name: client
+        image: client:0.0.1-SNAPSHOT
+        imagePullPolicy: Never
+        env:
+          - name: IO_RSOCKET_ROUTING_CLIENT_BROKERS_0_TCP_HOST
+            value: "8001"
+        resources:
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
