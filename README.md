@@ -30,20 +30,30 @@ Use Native Images
 
 ## [3.0.0 Release](https://github.com/poprygun/r-chachkies/releases/tag/3.0.0)
 
-docker network create rsocket-net
+- Create native images for `client`, `server`, and `broker`
 
-docker run --network rsocket-net --name broker -p 61616:61616 -p 8002:8002 -p 7002:7002 broker:0.0.1-SNAPSHOT
+```bash
+./mvnw spring-boot:build-image
+```
 
-docker run --network rsocket-net --name server -e 'IO_RSOCKET_ROUTING_CLIENT_BROKERS_0_TCP_HOST'='broker' -e 'IO_RSOCKET_ROUTING_CLIENT_BROKERS_0_TCP_PORT'='8002' server:0.0.1-SNAPSHOT
+- Create `broker` Kubernetes deployment/service
 
-docker run broker:0.0.1-SNAPSHOT
+```bash
+kubectl create -f k8s/broker-deployment.yaml
+```
+
+- Create `client` and `server` deployment
+
+```bash
+kubectl create -f k8s/client-server-deployment.yaml
+```
+
+- Watch `client` logs
+
+```bash
+kubectl logs <pod> -c client
+```
 
 
-docker build -t broker:0.0.1-SNAPSHOT
-docker build -t client:0.0.1-SNAPSHOT
-docker build -t server:0.0.1-SNAPSHOT
 
-docker run -e 'IO_RSOCKET_ROUTING_CLIENT_BROKERS_0_TCP_HOST'='host.docker.internal' docker.io/library/server:0.0.1-SNAPSHOT
-docker run -e 'IO_RSOCKET_ROUTING_CLIENT_BROKERS_0_TCP_HOST'='host.docker.internal' -e 'IO_RSOCKET_ROUTING_CLIENT_BROKERS_AUTOCONNECT'=false docker.io/library/server:0.0.1-SNAPSHOT
-docker run -e 'IO_RSOCKET_ROUTING_CLIENT_BROKERS_0_TCP_HOST'='host.docker.internal' -e 'IO_RSOCKET_ROUTING_CLIENT_BROKERS_AUTOCONNECT'=false docker.io/library/client:0.0.1-SNAPSHOT
-docker run -e io.rsocket.routing.client.brokers.tcp.host=host.docker.internal docker.io/library/client:0.0.1-SNAPSHOT
+

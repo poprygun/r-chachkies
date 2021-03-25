@@ -44,9 +44,3 @@ public class ClientApplication {
                         .subscribe(gr -> log.info("🎟 response: " + gr.toString()));
     }
 }
-
-@Value
-class Chachkie {
-    Double lat, lon;
-    Instant when;
-}

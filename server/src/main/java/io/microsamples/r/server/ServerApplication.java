@@ -44,8 +44,3 @@ class GreetingController {
     }
 }
 
-@Value
-class Chachkie {
-    Double lat, lon;
-    Instant when;
-}
