@@ -39,6 +39,7 @@ public class ClientApplication {
                         .address("server")
                         .data(Mono.justOrEmpty(Instant.now()))
                         .retrieveFlux(Chachkie.class)
+                        .timeout(Duration.ofSeconds(10))
                         .retryWhen(Retry.backoff(10, Duration.ofSeconds(3)))
                         .subscribe(gr -> log.info("🎟 response: " + gr.toString()));
     }
